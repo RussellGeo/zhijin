@@ -3,6 +3,9 @@
 import Vue from 'vue'
 import FastClick from 'fastclick'
 import VueRouter from 'vue-router'
+import VueScroller from 'vue-scroller'
+import VueJsonp from 'vue-jsonp'
+
 import App from './App'
 import store from './store'
 import News from './components/News'
@@ -10,7 +13,8 @@ import News from './components/News'
 import { ToastPlugin } from 'vux'
 
 Vue.use(VueRouter)
-
+Vue.use(VueJsonp)
+Vue.use(VueScroller)
 Vue.use(ToastPlugin)
 
 const routes = [{

@@ -1,11 +1,17 @@
 <template>
   <div>
-    <panel :list="list" :type="panel_type" @on-img-error="onImgError"></panel>
+    <scroller :on-refresh="refresh" :on-infinite="infinite" ref="refScroller">
+      <panel :list="newsList" :type="panel_type" @on-img-error="onImgError"></panel>
+      <panel :list="tailNewsList" :type="panel_type" @on-img-error="onImgError"></panel>
+    </scroller>
   </div>
 </template>
 
 <script>
 import { Panel } from 'vux'
+import { mapState, mapActions } from 'vuex'
+
+var inited = false
 
 export default {
   components: {
@@ -14,10 +20,50 @@ export default {
   methods: {
     onImgError (item, $event) {
       console.log(item, $event)
+    },
+
+    ...mapActions([
+      'get_news_api'
+    ]),
+
+    refresh () {
+      console.log(this.$refs.refScroller)
+      console.log('refresh function')
+      let self = this
+      setTimeout(() => {
+        self.get_news_api('http://127.0.0.1:8899/get_news/', true)
+        self.$refs.refScroller.finishPullToRefresh()
+      }, 1500)
+    },
+
+    infinite () {
+      if (!inited) {
+        this.$refs.refScroller.finishInfinite()
+        return
+      }
+      let self = this
+      console.log('infinite function')
+      setTimeout(() => {
+        self.get_news_api('http://127.0.0.1:8899/get_news/', false)
+        self.$refs.refScroller.finishInfinite()
+        console.log('infinite function2')
+      }, 1500)
     }
+
   },
+
+  computed: {
+    ...mapState({
+      newsList: state => state.NewsStore.newsList,
+      tailNewsList: state => state.NewsStore.tailNewsList
+    })
+  },
+
   created: function () {
+    this.get_news_api('http://127.0.0.1:8899/get_news/', true)
+    inited = true
   },
+
   data () {
     return {
       panel_type: '4',

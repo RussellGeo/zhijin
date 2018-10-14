@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -68,6 +69,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'server.wsgi.application'
+
+# this disables Cross domain requests
+CORS_ORIGIN_ALLOW_ALL = True
+
+# this allows cookie being passed cross domain
+#CORS_ALLOW_CREDENTIALS = True
+
+# this is the list of allowed origins for cross domain ajax
+CORS_ORIGIN_WHITELIST = (
+        '127.0.0.1:8080',
+)
 
 
 # Database
