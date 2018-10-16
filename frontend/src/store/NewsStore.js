@@ -2,10 +2,14 @@ import axios from 'axios'
 
 export default {
   state: {
+    newsCreated: false,
     newsList: [],
     tailNewsList: []
   },
   mutations: {
+    set_newscreated (state) {
+      state.newsCreated = true
+    }
   },
   actions: {
     get_news_api ({commit, state}, url, isTop) {

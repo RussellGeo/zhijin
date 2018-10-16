@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-      <router-view></router-view>
-      <bottom-menu></bottom-menu>
+    <router-view></router-view>
+    <bottom-menu></bottom-menu>
   </div>
 </template>
 
@@ -26,4 +26,5 @@ html,body {
   height: 100%;
   overflow: hidden;
 }
+
 </style>

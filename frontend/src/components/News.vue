@@ -1,5 +1,6 @@
 <template>
   <div>
+    <xheader></xheader>
     <scroller :on-refresh="refresh" :on-infinite="infinite" ref="refScroller">
       <panel :list="newsList" :type="panel_type" @on-img-error="onImgError"></panel>
       <panel :list="tailNewsList" :type="panel_type" @on-img-error="onImgError"></panel>
@@ -9,12 +10,14 @@
 
 <script>
 import { Panel } from 'vux'
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
+import Header from '@/components/Header'
 
 var inited = false
 
 export default {
   components: {
+    'xheader': Header,
     Panel
   },
   methods: {
@@ -24,6 +27,10 @@ export default {
 
     ...mapActions([
       'get_news_api'
+    ]),
+
+    ...mapMutations([
+      'set_newscreated'
     ]),
 
     refresh () {
@@ -54,14 +61,22 @@ export default {
 
   computed: {
     ...mapState({
+      newsCreated: state => state.NewsStore.newsCreated,
       newsList: state => state.NewsStore.newsList,
       tailNewsList: state => state.NewsStore.tailNewsList
     })
   },
 
   created: function () {
-    this.get_news_api('http://127.0.0.1:8899/get_news/', true)
+    console.log(this.newsCreated)
+    if (this.newsCreated === true) {
+      console.log('already created')
+      return
+    }
     inited = true
+    this.set_newscreated()
+    console.log('News.vue created')
+    this.get_news_api('http://127.0.0.1:8899/get_news/', true)
   },
 
   data () {
@@ -92,4 +107,11 @@ export default {
 }
 </script>
 
+<style lang="less">
+
+.my-scroller{
+  top: 15px;
+}
+
+</style>
 

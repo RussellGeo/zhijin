@@ -22,4 +22,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^test/', views.test),
     url(r'^get_news/', views.get_news),
+    url(r'^get_news_detail/', views.get_news_detail),
 ]

@@ -9,6 +9,7 @@ import VueJsonp from 'vue-jsonp'
 import App from './App'
 import store from './store'
 import News from './components/News'
+import NewsDetail from './components/NewsDetail'
 
 import { ToastPlugin } from 'vux'
 
@@ -17,12 +18,19 @@ Vue.use(VueJsonp)
 Vue.use(VueScroller)
 Vue.use(ToastPlugin)
 
-const routes = [{
-  path: '/',
-  component: News
-}]
+const routes = [
+  {
+    path: '/',
+    component: News
+  },
+  {
+    path: '/detail',
+    component: NewsDetail
+  }
+]
 
 const router = new VueRouter({
+  history: true,
   routes
 })
 
