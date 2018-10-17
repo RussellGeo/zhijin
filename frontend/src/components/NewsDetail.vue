@@ -19,17 +19,29 @@
 import { XHeader, Card } from 'vux'
 import axios from 'axios'
 
+var ip = 'http://106.12.124.186:8899'
+
 export default {
   components: {
     XHeader,
     Card
   },
 
+  watch: {
+    $route (val) {
+      if (val.query.news_id) {
+        let newsId = val.query.news_id
+        console.log('watch news_id:' + newsId)
+        this.get_news_detail2(newsId)
+      }
+    }
+  },
+
   methods: {
     get_news_detail (newsId) {
       axios({
         method: 'get',
-        url: 'http://127.0.0.1:8899/get_news_detail?news_id=' + newsId
+        url: ip + '/get_news_detail?news_id=' + newsId
       })
       .then(function (response) {
         console.log(response)
@@ -40,14 +52,14 @@ export default {
     },
 
     get_news_detail2 (newsId) {
-      this.$jsonp('http://127.0.0.1:8899/get_news_detail?news_id=' + newsId).then(data => {
+      this.$jsonp(ip + '/get_news_detail?news_id=' + newsId).then(data => {
         console.log(data)
       }).catch(err => {
         console.log(err)
       })
     }
 
-  },
+  }, // end methods
 
   created: function () {
     let newsId = this.$route.query.news_id

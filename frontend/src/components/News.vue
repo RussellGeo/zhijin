@@ -1,7 +1,7 @@
 <template>
   <div>
-    <xheader></xheader>
-    <scroller :on-refresh="refresh" :on-infinite="infinite" ref="refScroller">
+    <x-header class="header" slot="header" :left-options="{showBack: false}"> zhijin </x-header>
+    <scroller class="my-scroller" :on-refresh="refresh" :on-infinite="infinite" ref="refScroller">
       <panel :list="newsList" :type="panel_type" @on-img-error="onImgError"></panel>
       <panel :list="tailNewsList" :type="panel_type" @on-img-error="onImgError"></panel>
     </scroller>
@@ -9,15 +9,14 @@
 </template>
 
 <script>
-import { Panel } from 'vux'
+import { XHeader, Panel } from 'vux'
 import { mapState, mapActions, mapMutations } from 'vuex'
-import Header from '@/components/Header'
 
 var inited = false
 
 export default {
   components: {
-    'xheader': Header,
+    XHeader,
     Panel
   },
   methods: {
@@ -26,7 +25,8 @@ export default {
     },
 
     ...mapActions([
-      'get_news_api'
+      'get_news_api',
+      'j_get_news_api'
     ]),
 
     ...mapMutations([
@@ -38,7 +38,8 @@ export default {
       console.log('refresh function')
       let self = this
       setTimeout(() => {
-        self.get_news_api('http://127.0.0.1:8899/get_news/', true)
+        // self.get_news_api('/get_news/', true)
+        self.get_news_api({url: '/get_news/', isTop: true})
         self.$refs.refScroller.finishPullToRefresh()
       }, 1500)
     },
@@ -51,7 +52,8 @@ export default {
       let self = this
       console.log('infinite function')
       setTimeout(() => {
-        self.get_news_api('http://127.0.0.1:8899/get_news/', false)
+        // self.get_news_api('/get_news/', false)
+        self.get_news_api({url: '/get_news/', isTop: false})
         self.$refs.refScroller.finishInfinite()
         console.log('infinite function2')
       }, 1500)
@@ -76,7 +78,7 @@ export default {
     inited = true
     this.set_newscreated()
     console.log('News.vue created')
-    this.get_news_api('http://127.0.0.1:8899/get_news/', true)
+    this.get_news_api({url: '/get_news/', isTop: true})
   },
 
   data () {
@@ -103,14 +105,43 @@ export default {
         }
       }]
     }
+  },
+
+  beforeRouteEnter (to, from, next) {
+    if (!sessionStorage.askPositon || from.path === '/') {
+      console.log('before enter from path' + from.path)
+      sessionStorage.askPositon = ''
+      next()
+    } else {
+      next(vm => {
+        if (vm && vm.$refs.refScroller) {
+          setTimeout(function () {
+            vm.$refs.refScroller.scrollTo(0, sessionStorage.askPositon, false)
+          }, 3)
+        }
+      })
+    }
+  },
+  beforeRouteLeave (to, from, next) {
+    sessionStorage.askPositon = this.$refs.refScroller && this.$refs.refScroller.getPosition() && this.$refs.refScroller.getPosition().top
+    next()
   }
+
 }
 </script>
 
 <style lang="less">
 
 .my-scroller{
-  top: 15px;
+  top: auto !important;
+}
+
+.header{
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  z-index: 999;
 }
 
 </style>
