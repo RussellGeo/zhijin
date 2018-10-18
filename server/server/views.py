@@ -2,7 +2,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-import pymongo
+from mongo import mongo_helper
 import json
 import time
 
@@ -35,6 +35,24 @@ def _gen_data(num = 5):
         ret.append(news)
     return ret
 
+def _get_news_from_mongo(num = 10):
+    cur = mongo_helper.find('news_meta')
+    ret = []
+    for x in cur:
+        news = {}
+        news['src'] = x['url']
+        news['fallbackSrc'] = 'none'
+        news['title'] = x['title']
+        news['desc'] = ''
+        if 'crawled' in news and news['crawled'] == 1:
+            news['url'] = '/detail?news_id=' + x['newsid']
+        else:
+            news['url'] = '/'
+
+        news['meta'] = {'source': x['source'], 'date': x['datetime'], 'other': ''}
+        ret.append(news)
+    return ret
+
 
 # api
 def test(request):
@@ -43,7 +61,8 @@ def test(request):
     return HttpResponse("teset response111")
 
 def get_news(request):
-    news_list= _gen_data()
+    #news_list = _gen_data()
+    news_list = _get_news_from_mongo()
     data = {'retcode': 0, 'errmsg': ""}
     data['data'] = json.dumps(news_list)
 

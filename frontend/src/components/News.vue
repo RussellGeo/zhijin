@@ -1,27 +1,37 @@
 <template>
   <div>
-    <x-header class="header" slot="header" :left-options="{showBack: false}"> zhijin </x-header>
+    <!--x-header class="header" slot="header" :left-options="{showBack: false}"> zhijin </x-header-->
+    <my-header> </my-header>
     <scroller class="my-scroller" :on-refresh="refresh" :on-infinite="infinite" ref="refScroller">
-      <panel :list="newsList" :type="panel_type" @on-img-error="onImgError"></panel>
+      <panel :list="newsList" :type="panel_type" @on-click-item="onClickItem" @on-img-error="onImgError"></panel>
       <panel :list="tailNewsList" :type="panel_type" @on-img-error="onImgError"></panel>
     </scroller>
   </div>
 </template>
 
 <script>
-import { XHeader, Panel } from 'vux'
+// import { XHeader, Panel } from 'vux'
+import { Panel } from 'vux'
 import { mapState, mapActions, mapMutations } from 'vuex'
+import Header from '@/components/Header'
 
 var inited = false
 
 export default {
   components: {
-    XHeader,
+    // XHeader,
+    'my-header': Header,
     Panel
   },
   methods: {
     onImgError (item, $event) {
       console.log(item, $event)
+    },
+
+    onClickItem (item) {
+      if (item.url === '/') {
+        window.open(item.src)
+      }
     },
 
     ...mapActions([
@@ -136,7 +146,7 @@ export default {
   top: auto !important;
 }
 
-.header{
+.myheader{
   position: absolute;
   left: 0;
   top: 0;

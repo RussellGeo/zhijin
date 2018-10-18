@@ -7,6 +7,7 @@
 
 import pymongo
 import logging
+import spider.utils as utils
 
 class SpiderPipeline(object):
     def process_item(self, item, spider):
@@ -14,7 +15,8 @@ class SpiderPipeline(object):
 
 class MongodbPipeline(object):
 
-    collection_name = 'news'
+    newsmeta_collection_name = 'news_meta'
+    mewscontent_collection_name = 'news_content'
 
     def __init__(self, mongo_uri, mongo_db):
         self.mongo_uri = mongo_uri
@@ -35,15 +37,23 @@ class MongodbPipeline(object):
         self.client.close()
 
     def process_item(self, item, spider):
-        item['_id'] = hash(item["url"])
-        item['show'] = 1
-        item['source'] = spider.name
+        if item.__class__.__name__ == 'NewsMeta':
+            item['newsid'] = utils.create_id(item['url'])
+            item['news_class'] = "normal"
+            item['source'] = spider.name
 
-        print 'pipeline'
+            print 'pipeline'
 
-        try:
-            self.db[collection_name].insert(dict(item))
-        except Exception as e:
-            logging.error("Alert(: mongodb insert error, exception:" + str(e))
+            try:
+                if self.db[self.newsmeta_collection_name].find({'newsid':item['newsid']}).count() == 0:
+                    self.db[self.newsmeta_collection_name].insert(dict(item))
+                else:
+                    logging.info("duplicated url:" + item['url'])
+            except Exception as e:
+                logging.error("Alert(: mongodb insert error, exception:" + str(e))
+        elif item.__class__.__name__ == 'NewsContent':
+            pass
+        else:
+            print 'unknown', item.__class__.__name__
         return item
 

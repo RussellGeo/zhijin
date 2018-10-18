@@ -134,7 +134,6 @@ export default {
         font-size: 20px;
         font-weight: bold;
         padding: 0.4rem 0;
-        text-align: center;
     }
     .source {
         margin-right: 5px;

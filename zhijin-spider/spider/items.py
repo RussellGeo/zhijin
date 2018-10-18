@@ -14,14 +14,21 @@ class SpiderItem(scrapy.Item):
     pass
 
 class NewsMeta(scrapy.Item):
-    _id = scrapy.Field()
-    show = scrapy.Field()
-    source = scrapy.Field()
+    newsid = scrapy.Field()
 
-    site = scrapy.Field()
-    url = scrapy.Field()
+    source = scrapy.Field()
     title = scrapy.Field()
     datetime = scrapy.Field()
+    url = scrapy.Field()
+    site = scrapy.Field()
     keywords = scrapy.Field()
+    desc = scrapy.Field()
+
+    news_class = scrapy.Field()
+    score = scrapy.Field()
+
+
+class NewsContent(scrapy.Item):
+    newsid = scrapy.Field()
     content = scrapy.Field()
 

@@ -1,5 +1,5 @@
 <template>
-  <x-header :left-options="{showBack: false}">
+  <x-header class="myheader" slot="header" :left-options="{showBack: false}">
     知今
   </x-header>
 </template>
@@ -14,7 +14,7 @@ export default {
 </script>
 
 <style lang="less">
-.xheader{
+.myheader{
   position: absolute;
   left: 0;
   top: 0;

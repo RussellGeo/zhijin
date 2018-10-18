@@ -11,6 +11,7 @@ import App from './App'
 import store from './store'
 import News from './components/News'
 import NewsDetail from './components/NewsDetail'
+import Topic from './page/Topic'
 
 Vue.use(ToastPlugin)
 Vue.use(VueJsonp)
@@ -25,6 +26,10 @@ const routes = [
   {
     path: '/detail',
     component: NewsDetail
+  },
+  {
+    path: '/topic',
+    component: Topic
   }
 ]
 
