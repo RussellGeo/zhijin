@@ -16,6 +16,7 @@
   "dependencies": {
     "fastclick": "^1.0.6",
     "vue": "^2.5.2",
+    "vue-cookies": "^1.5.7",
     "vue-jsonp": "^0.1.8",
     "vue-router": "^3.0.1",
     "vue-scroller": "^2.2.4",

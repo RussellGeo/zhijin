@@ -3,8 +3,8 @@
     <!--x-header class="header" slot="header" :left-options="{showBack: false}"> zhijin </x-header-->
     <my-header> </my-header>
     <scroller class="my-scroller" :on-refresh="refresh" :on-infinite="infinite" ref="refScroller">
-      <panel :list="newsList" :type="panel_type" @on-click-item="onClickItem" @on-img-error="onImgError"></panel>
-      <panel :list="tailNewsList" :type="panel_type" @on-img-error="onImgError"></panel>
+      <!--panel :list="newsList" :type="panel_type" @on-click-item="onClickItem" @on-img-error="onImgError"></panel-->
+      <panel :list="tailNewsList" :type="panel_type" @on-click-item="onClickItem" @on-img-error="onImgError"></panel>
     </scroller>
   </div>
 </template>
@@ -15,7 +15,8 @@ import { Panel } from 'vux'
 import { mapState, mapActions, mapMutations } from 'vuex'
 import Header from '@/components/Header'
 
-var inited = false
+// var inited = false
+var updating = false
 
 export default {
   components: {
@@ -44,29 +45,50 @@ export default {
     ]),
 
     refresh () {
-      console.log(this.$refs.refScroller)
-      console.log('refresh function')
-      let self = this
-      setTimeout(() => {
-        // self.get_news_api('/get_news/', true)
-        self.get_news_api({url: '/get_news/', isTop: true})
-        self.$refs.refScroller.finishPullToRefresh()
-      }, 1500)
+      this.$refs.refScroller.finishPullToRefresh()
+
+      // console.log(this.$refs.refScroller)
+      // console.log('refresh function')
+      // let self = this
+      // setTimeout(() => {
+      //   // self.get_news_api('/get_news/', true)
+      //   self.get_news_api({url: '/get_news/', isTop: true})
+      //   self.$refs.refScroller.finishPullToRefresh()
+      // }, 1500)
     },
 
     infinite () {
-      if (!inited) {
+      console.log('enter infinite')
+      // console.log(inited)
+      // if (inited === false) {
+      //   this.$refs.refScroller.finishInfinite()
+      //   return
+      // }
+      if (updating === true) {
         this.$refs.refScroller.finishInfinite()
         return
       }
+      updating = true
       let self = this
       console.log('infinite function')
+      console.log(this.$cookies.get('token'))
       setTimeout(() => {
         // self.get_news_api('/get_news/', false)
-        self.get_news_api({url: '/get_news/', isTop: false})
-        self.$refs.refScroller.finishInfinite()
+        let l = self.tailNewsList.length
+        console.log(l)
+        self.j_get_news_api({url: '/get_news/', isTop: false})
+        let l2 = self.tailNewsList.length
+        console.log(l2)
+        if (l === l2) {
+          console.log('no more data')
+          self.$refs.refScroller.finishInfinite(true)
+        } else {
+          self.$refs.refScroller.finishInfinite()
+        }
+        updating = false
         console.log('infinite function2')
       }, 1500)
+      console.log('infinite function3')
     }
 
   },
@@ -85,10 +107,12 @@ export default {
       console.log('already created')
       return
     }
-    inited = true
     this.set_newscreated()
     console.log('News.vue created')
-    this.get_news_api({url: '/get_news/', isTop: true})
+    // setTimeout(() => {
+    //   this.j_get_news_api({url: '/get_news/', isTop: false})
+    //   inited = true
+    // }, 1500)
   },
 
   data () {

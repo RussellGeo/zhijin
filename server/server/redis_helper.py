@@ -2,8 +2,12 @@ import redis
 
 class RedisHelper(object):
     def __init__(self, host='127.0.0.1', port=6379):
+        print "redis init ", host, port
         self.__conn = redis.Redis(host=host, port=port)
         #self.channel = 'monitor'
+
+    def exists(self, key):
+        return self.__conn.exists(key)
 
     def publish(self, channel, msg):
         self.__conn.publish(channel,msg)
@@ -42,6 +46,9 @@ class RedisHelper(object):
 
     def smembers(self, key):
         return self.__conn.smembers(key)
+
+    def sismember(self, key, val):
+        return self.__conn.sismember(key, val)
 
     def lpush(self, key, value):
         self.__conn.lpush(key, value)

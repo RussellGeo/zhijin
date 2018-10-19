@@ -13,10 +13,14 @@ import News from './components/News'
 import NewsDetail from './components/NewsDetail'
 import Topic from './page/Topic'
 
+import VueCookies from 'vue-cookies'
+
 Vue.use(ToastPlugin)
 Vue.use(VueJsonp)
 Vue.use(VueRouter)
 Vue.use(VueScroller)
+
+Vue.use(VueCookies)
 
 const routes = [
   {

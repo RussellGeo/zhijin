@@ -3,6 +3,7 @@ import Vue from 'vue'
 import VueJsonp from 'vue-jsonp'
 
 Vue.use(VueJsonp)
+axios.defaults.withCredentials = true
 
 export default {
   state: {
@@ -48,13 +49,15 @@ export default {
       })
     },
 
-    j_get_news_api ({commit, state}, url, isTop) {
-      this.$jsonp(url).then(data => {
-        console.log(data)
-        let newsList = data
+    j_get_news_api ({commit, state}, info) {
+      let url = info.url
+      let isTop = info.isTop
+      console.log('jsonp request')
+      Vue.jsonp(state.serverIp + url).then(data => {
+        console.log(data.data)
+        let newsList = JSON.parse(data.data)
         for (let i in newsList) {
           let news = newsList[i]
-          console.log(news)
           let d = {src: news.src, fallbackSrc: news.fallbackSrc, title: news.title, url: news.url, meta: {source: news.meta.source, date: news.meta.date, other: news.meta.other}}
           if (isTop) {
             console.log('front insert')
