@@ -23,6 +23,7 @@ class NewsMeta(scrapy.Item):
     site = scrapy.Field()
     keywords = scrapy.Field()
     desc = scrapy.Field()
+    img = scrapy.Field()
 
     news_class = scrapy.Field()
     score = scrapy.Field()

@@ -45,7 +45,7 @@ def _gen_data(token, num = 5):
     return ret
 
 def _get_news_from_mongo(token, num = 10):
-    cur = mongo_helper.find('news_meta')
+    cur = mongo_helper.find('news_meta').sort("datetime", -1)
     ret = []
     for x in cur:
         if token and _showed(token, x['newsid']):
@@ -61,7 +61,7 @@ def _get_news_from_mongo(token, num = 10):
         else:
             news['url'] = '/'
 
-        news['meta'] = {'source': x['source'], 'date': x['datetime'], 'other': ''}
+        news['meta'] = {'source': x['site'], 'date': x['datetime'], 'other': ''}
         ret.append(news)
         _showing(token, x['newsid'])
         num -= 1
