@@ -59,3 +59,6 @@ class RedisHelper(object):
     def delete(self, key):
         self.__conn.delete(key)
 
+    def expire(self, key, seconds):
+        self.__conn.expire(key, seconds)
+

@@ -18,7 +18,8 @@ def _showed(token, newsid):
     return redis_con.sismember(token, newsid)
 
 def _showing(token, newsid):
-    return redis_con.sadd(token, newsid)
+    redis_con.sadd(token, newsid)
+    redis_con.expire(token, 7*24*3600)
 
 def _gen_data(token, num = 5):
     global seq
@@ -61,7 +62,7 @@ def _get_news_from_mongo(token, num = 10):
         else:
             news['url'] = '/'
 
-        news['meta'] = {'source': x['site'], 'date': x['datetime'], 'other': ''}
+        news['meta'] = {'source': x['site'], 'date': x['datetime'][:16], 'other': ''}
         ret.append(news)
         _showing(token, x['newsid'])
         num -= 1
