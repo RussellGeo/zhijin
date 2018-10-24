@@ -44,13 +44,19 @@ class RfiNewsSpider(scrapy.Spider):
                 item["title"] = a.string
                 item["datetime"] = now_datetime()
 
+                if mongo_helper.news_url_exists(item['url']):
+                    print "news exists", item['url'], item['title']
+                    #continue
+
                 print item
                 #items.append(item)
 
                 req = scrapy.Request(url = item["url"], headers = self.hheaders, callback=self.parse_content)
                 req.meta['url'] = item['url']
+                req.meta['title'] = item['title']
 
                 yield req
+                break
             except Exception as e:
                 print e, "|||",  news
                 continue
@@ -59,18 +65,25 @@ class RfiNewsSpider(scrapy.Spider):
     def parse_content(self, response):
         print "parse content"
         soup = BeautifulSoup(response.body, 'lxml')
+        items = []
         try:
             content = soup.find("div", class_="bd")
+            print "c===", content
+            print "string === ", content.text
 
-            news = NewsContent()
-            news['content'] = content.string
-            news['url'] = response.meta['url']
+            item = NewsMeta()
+            item["site"] = self.site
+            item["url"] = response.meta['url']
+            item["title"] = response.meta['title']
+            item["datetime"] = now_datetime()
+            item["crawled"] = 1
+            item["content"] = content.text
 
-            ret.append(news)
+            items.append(item)
         except Exception as e:
             print e, "|||", response.body
 
-        return ret
+        return items
         pass
 
 
