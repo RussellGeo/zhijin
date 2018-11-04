@@ -13,19 +13,27 @@
         <p>{{content}}</p>
       </div>
     </card -->
+    
+    <scroller style="top:auto;">
 
-    <article id="article">
-      <div class="article-info">
+    <card>
+    <!--article id="article"-->
+      <div slot="header" class="article-info">
         <h1 class="title">{{title}} </h1>
         <span class="source" style="font-size:15px;">{{source}} </span>
         <span class="date" style="font-size:12px;">{{date}} </span>
       </div>
-      <br>
+      <p></p>
+      <br><br><br>
         
-      <section class="article-content">
+      <section slot="content" class="article-content">
         <div class="content-html" v-html='content'> </div>
       </section>
-    </article>
+    <!--/article-->
+    </card>
+    <br><br><br><br>
+
+    </scroller>
 
   </div>
 </template>

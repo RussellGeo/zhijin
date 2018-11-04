@@ -15,6 +15,9 @@ class QdailyNewsSpider(scrapy.Spider):
         "http://m.qdaily.com/mobile/homes.html"
     ]
 
+    score = [6,6,6,6,5,5,5,5,4,4,4,4,4,3]
+    index = 0
+
     def parse(self, response):
         items = []
         soup = BeautifulSoup(response.body, 'lxml')
@@ -30,6 +33,10 @@ class QdailyNewsSpider(scrapy.Spider):
                 item["url"] = self.base_url + url
                 item["title"] = title
                 item["datetime"] = now_datetime()
+
+                item["score"] = self.score[self.index]
+                self.index = min(len(self.score) - 1, self.index + 1)
+
                 print item
                 items.append(item)
             except Exception as e:
@@ -48,6 +55,10 @@ class QdailyNewsSpider(scrapy.Spider):
                 item["url"] = self.base_url + url
                 item["title"] = title
                 item["datetime"] = now_datetime()
+
+                item["score"] = self.score[self.index]
+                self.index = min(len(self.score) - 1, self.index + 1)
+
                 print item
                 items.append(item)
             except Exception as e:

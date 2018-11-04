@@ -14,6 +14,9 @@ class FtchineseSpider(scrapy.Spider):
         "http://www.ftchinese.com"
     ]
 
+    score = [6,6,6,5,5,5,5,4,4,4,4,4,3]
+    index = 0
+
     def parse(self, response):
         soup = BeautifulSoup(response.body, 'lxml')
         clist = soup.find_all("div", class_="item-inner")
@@ -40,6 +43,10 @@ class FtchineseSpider(scrapy.Spider):
                 item["datetime"] = now_datetime()
                 item["desc"] = desc
                 item["img"] = img
+
+                item["score"] = self.score[self.index]
+                self.index = min(len(self.score) - 1, self.index + 1)
+
                 print item
                 #items.append(item)
             except Exception as e:

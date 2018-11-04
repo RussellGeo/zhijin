@@ -8,6 +8,7 @@ from redis_util import redis_con
 from mongo import mongo_helper
 import json
 import time
+import random
 
 seq = 0
 # internal function
@@ -45,9 +46,18 @@ def _gen_data(token, num = 5):
         ret.append(news)
     return ret
 
+def _get_sort_key(news):
+    return news['score']
+
+def _calc(news_list, num = 10):
+    news_list.sort(key = _get_sort_key, reverse = True)
+    return news_list[0:10]
+    pass
+
 def _get_news_from_mongo(token, num = 10):
     cur = mongo_helper.find('news_meta').sort("datetime", -1)
     ret = []
+    candidate_num = num * 10
     for x in cur:
         if token and _showed(token, x['newsid']):
             continue
@@ -56,19 +66,30 @@ def _get_news_from_mongo(token, num = 10):
         news['src'] = x['url']
         news['fallbackSrc'] = 'none'
         news['title'] = x['title']
-        news['desc'] = ''
-        if 'crawled' in news and news['crawled'] == 1:
+        desc = x.get('desc', '')
+        if len(desc) == 0 and len(x['title']) >= 20:
+            desc = x['title']
+        #news['desc'] = '' if 'desc' not in x else x['desc']
+        news['desc'] = desc
+        news['newsid'] = x['newsid']
+        news['score'] = x.get('score', 5)
+        if 'crawled' in x and x['crawled'] == 1:
             news['url'] = '/detail?news_id=' + x['newsid']
         else:
             news['url'] = '/'
 
         news['meta'] = {'source': x['site'], 'date': x['datetime'][:16], 'other': ''}
         ret.append(news)
-        _showing(token, x['newsid'])
-        num -= 1
-        if num <= 0:
+        #_showing(token, x['newsid'])
+        candidate_num -= 1
+        if candidate_num <= 0:
             break
-    return ret
+    news_ret = random.sample(ret, len(ret))
+    news_ret = _calc(news_ret)
+    for news in news_ret:
+        _showing(token, news['newsid'])
+
+    return news_ret
 
 def _cookie_auth(request):
     if 'token' not in request.COOKIES:
@@ -92,12 +113,17 @@ def test(request):
     #b = request.GET['b']
     return HttpResponse("teset response111")
 
+def reorder(news_list):
+    return random.sample(news_list, len(news_list))
+    pass
+
 def get_news(request):
     token = _get_token(request)
     callback = _get_callback(request)
     print "token", token
     #news_list = _gen_data(token)
     news_list = _get_news_from_mongo(token)
+    news_list = reorder(news_list)
     data = {'retcode': 0, 'errmsg': ""}
     data['data'] = json.dumps(news_list)
 
@@ -114,12 +140,26 @@ def get_news_detail(request):
     global data_map
     news_id = request.GET['news_id']
     callback = request.GET['callback']
-    news = data_map.get(news_id, None)
-    news = news if news else ''
+
+    cur = mongo_helper.find('news_meta', {'newsid': news_id})
+    news = {}
+    for x in cur:
+
+        news['src'] = x['url']
+        news['fallbackSrc'] = 'none'
+        news['title'] = x['title']
+        news['desc'] = ''
+        if 'crawled' in news and news['crawled'] == 1:
+            news['url'] = '/detail?news_id=' + x['newsid']
+        else:
+            news['url'] = '/'
+
+        news['meta'] = {'source': x['site'], 'date': x['datetime'][:16], 'other': ''}
+        news['content'] = x['content']
 
     print 'news_id', news_id, callback, news
     res = HttpResponse("%s(%s)" % (callback, json.dumps({'retcode':0, 'errmsg':'', 'data':news})))
-    res["Access-Control-Allow-Origin"] = "*"
+    #res["Access-Control-Allow-Origin"] = "*"
     return res
 
 

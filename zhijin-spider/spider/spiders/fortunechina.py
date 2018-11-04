@@ -14,6 +14,9 @@ class FortunechinaSpider(scrapy.Spider):
         "http://app.fortunechina.com/mobile/"
     ]
 
+    score = [6,6,6,5,5,5,5,4,4,4,4,4,3]
+    index = 0
+
     def parse(self, response):
         soup = BeautifulSoup(response.body, 'lxml')
         clist = soup.find_all("dl", class_="newslist")
@@ -29,6 +32,8 @@ class FortunechinaSpider(scrapy.Spider):
                     item["url"] = self.base_url + a.get('href')
                     item["title"] = a.string
                     item["datetime"] = now_datetime()
+                    item["score"] = self.score[self.index]
+                    self.index = min(len(self.score) - 1, self.index + 1)
                     #print item
                     items.append(item)
                 except Exception as e:
