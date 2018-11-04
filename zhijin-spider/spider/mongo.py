@@ -3,6 +3,7 @@ import logging
 
 news_db = 'News'
 news_meta_table = 'news_meta'
+news_content_table = 'news_content'
 
 class PymongoHelper(object):
     def __init__(self, db_name, address = "mongodb://localhost:27017/"):
@@ -12,6 +13,7 @@ class PymongoHelper(object):
         self.db = self.client[db_name]
 
         self.news_meta = news_meta_table
+        self.news_content = news_content_table
 
     def find(self, table, params = None):
         if params:
@@ -26,8 +28,14 @@ class PymongoHelper(object):
         else:
             return True
 
-    def news_meta_exists(self, params):
-        return self.exists(self.news_meta, params)
+    def news_url_exists(self, url):
+        return self.exists(self.news_meta, {'url':url})
+
+    def newsid_exists(self, newsid):
+        return self.exists(self.news_meta, {'newsid':newsid})
+
+    def newsid_content_exists(self, newsid):
+        return self.exists(self.news_content, {'newsid':newsid})
 
     def test(self):
 

@@ -42,7 +42,7 @@ class MongodbPipeline(object):
             item['news_class'] = "normal"
             item['source'] = spider.name
 
-            print 'pipeline'
+            print 'pipeline', item
 
             try:
                 if self.db[self.newsmeta_collection_name].find({'newsid':item['newsid']}).count() == 0:

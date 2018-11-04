@@ -28,6 +28,9 @@ class NewsMeta(scrapy.Item):
     news_class = scrapy.Field()
     score = scrapy.Field()
 
+    crawled = scrapy.Field()
+    content = scrapy.Field()
+
 
 class NewsContent(scrapy.Item):
     newsid = scrapy.Field()
