@@ -33,7 +33,7 @@ export default {
         for (let i in newsList) {
           let news = newsList[i]
           console.log(news)
-          let d = {src: news.src, fallbackSrc: news.fallbackSrc, title: news.title, url: news.url, meta: {source: news.meta.source, date: news.meta.date, other: news.meta.other}}
+          let d = {src: news.src, fallbackSrc: news.fallbackSrc, title: news.title, url: news.url, desc: news.desc, meta: {source: news.meta.source, date: news.meta.date, other: news.meta.other}}
           console.log(isTop)
           if (isTop === true) {
             console.log('front insert')
@@ -58,7 +58,7 @@ export default {
         let newsList = JSON.parse(data.data)
         for (let i in newsList) {
           let news = newsList[i]
-          let d = {src: news.src, fallbackSrc: news.fallbackSrc, title: news.title, url: news.url, meta: {source: news.meta.source, date: news.meta.date, other: news.meta.other}}
+          let d = {src: news.src, fallbackSrc: news.fallbackSrc, title: news.title, url: news.url, desc: news.desc, meta: {source: news.meta.source, date: news.meta.date, other: news.meta.other}}
           if (isTop) {
             console.log('front insert')
             state.newsList.push(d)

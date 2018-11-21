@@ -14,6 +14,10 @@ class DapentiNewsSpider(scrapy.Spider):
         "http://www.dapenti.com/blog/indexforweb.asp"
     ]
 
+    keyword = u'喷嚏图卦'
+    keyword_score = 8
+    score = 5
+
     def parse(self, response):
         soup = BeautifulSoup(response.body, 'lxml')
         clist = soup.find_all("div", class_="center_title_down")
@@ -29,6 +33,9 @@ class DapentiNewsSpider(scrapy.Spider):
                     item["url"] = self.base_url + a.get('href')
                     item["title"] = a.get('title')
                     item["datetime"] = now_datetime()
+                    item["score"] = self.score
+                    if item["title"].find(self.keyword) != -1:
+                        item["score"] = self.keyword_score
                     items.append(item)
                 except Exception as e:
                     print e, "|||",  news

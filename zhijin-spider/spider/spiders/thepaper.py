@@ -5,21 +5,21 @@ from bs4 import BeautifulSoup
 from spider.items import NewsMeta
 from spider.utils import *
 
-class JiemianNewsSpider(scrapy.Spider):
-    name = "jiemian"
-    site = u'界面'
-    allowed_domains = ["jiemian.com"]
-    base_url = "https://m.jiemian.com/"
+class ThepaperNewsSpider(scrapy.Spider):
+    name = "thepaper"
+    site = u'澎湃'
+    allowed_domains = ["thepaper.cn"]
+    base_url = "https://m.thepaper.cn/"
     start_urls = [
-            "https://m.jiemian.com"
+            "https://m.thepaper.cn/"
     ]
 
-    score = [6,6,6,5,5,5,5,4,4,4,4,4,3]
+    score = [5,5,4,4,4,3,3,3,3,2]
     index = 0
 
     def parse(self, response):
         soup = BeautifulSoup(response.body, 'lxml')
-        clist = soup.find_all("div", class_="news-header")
+        clist = soup.find_all("div", class_="txt_t")
         items = []
         for news in clist:
             try:
@@ -27,7 +27,7 @@ class JiemianNewsSpider(scrapy.Spider):
                 print "href", a.get('href'), type(a.get('href'))
                 item = NewsMeta()
                 item["site"] = self.site
-                item["url"] = a.get('href')
+                item["url"] = self.base_url + a.get('href')
                 item["title"] = a.string
                 item["datetime"] = now_datetime()
 
