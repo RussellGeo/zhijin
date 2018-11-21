@@ -6,13 +6,13 @@ from spider.items import NewsMeta, NewsContent
 from spider.utils import *
 from spider.mongo import mongo_helper
 
-class RfiNewsSpider(scrapy.Spider):
-    name = "rfi"
-    site = u'法广'
-    allowed_domains = ["rfi.fr"]
-    base_url = "http://m.cn.rfi.fr"
+class NytimesNewsSpider(scrapy.Spider):
+    name = "nytimes"
+    site = u'纽约时报'
+    allowed_domains = ["nytimes.com"]
+    base_url = "https://m.cn.nytimes.com"
     start_urls = [
-            "http://m.cn.rfi.fr/"
+            "https://m.cn.nytimes.com/"
     ]
 
     score = [7,7,7,7,6,6,6,6,5,5,5,5,4]
@@ -30,12 +30,12 @@ class RfiNewsSpider(scrapy.Spider):
         "Cache-control":"max-age=0",
         #"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
         "user-agent":"Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Mobile Safari/537.36",
-        "referer":"http://m.cn.rfi.fr/",
+        "referer":"https://m.cn.nytimes.com/",
     }
 
     def parse(self, response):
         soup = BeautifulSoup(response.body, 'lxml')
-        news_list = soup.find_all("h3", class_="desc")
+        news_list = soup.find("div", class_="articles").find_all("li", class_="regular-item")
         items = []
         for news in news_list:
             try:
@@ -43,9 +43,10 @@ class RfiNewsSpider(scrapy.Spider):
                 print "href", a.get('href'), type(a.get('href'))
                 item = NewsMeta()
                 item["site"] = self.site
-                item["url"] = self.base_url + a.get('href')
-                item["title"] = a.string
+                item["url"] = a.get('href')
+                item["title"] = a.get('title')
                 item["datetime"] = now_datetime()
+                item["desc"] = news.find("p", class_="summary").string
 
                 if mongo_helper.news_url_exists(item['url']):
                     print "news exists", item['url'], item['title']
@@ -57,6 +58,7 @@ class RfiNewsSpider(scrapy.Spider):
                 req = scrapy.Request(url = item["url"], headers = self.hheaders, callback=self.parse_content)
                 req.meta['url'] = item['url']
                 req.meta['title'] = item['title']
+                req.meta['desc'] = item['desc']
 
                 yield req
             except Exception as e:
@@ -69,7 +71,7 @@ class RfiNewsSpider(scrapy.Spider):
         soup = BeautifulSoup(response.body, 'lxml')
         items = []
         try:
-            content = soup.find("div", class_="bd")
+            content = soup.find("section", class_="article-body")
             #print "c===", content
             #print "string === ", content.text
 
@@ -81,7 +83,7 @@ class RfiNewsSpider(scrapy.Spider):
             item["crawled"] = 1
             item["news_class"] = 1
             item["content"] = content.prettify()
-            item["desc"] = content.text[0:40]
+            item["desc"] = response.meta['desc']
 
             item["score"] = self.score[self.index]
             self.index = min(len(self.score) - 1, self.index + 1)

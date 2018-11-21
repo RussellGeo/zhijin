@@ -6,13 +6,13 @@ from spider.items import NewsMeta, NewsContent
 from spider.utils import *
 from spider.mongo import mongo_helper
 
-class RfiNewsSpider(scrapy.Spider):
-    name = "rfi"
-    site = u'法广'
-    allowed_domains = ["rfi.fr"]
-    base_url = "http://m.cn.rfi.fr"
+class BbcNewsSpider(scrapy.Spider):
+    name = "bbc"
+    site = u'BBC'
+    allowed_domains = ["bbc.com"]
+    base_url = "https://www.bbc.com"
     start_urls = [
-            "http://m.cn.rfi.fr/"
+            "https://www.bbc.com/zhongwen/simp/popular/read"
     ]
 
     score = [7,7,7,7,6,6,6,6,5,5,5,5,4]
@@ -30,12 +30,12 @@ class RfiNewsSpider(scrapy.Spider):
         "Cache-control":"max-age=0",
         #"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
         "user-agent":"Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Mobile Safari/537.36",
-        "referer":"http://m.cn.rfi.fr/",
+        "referer":"https://www.bbc.com/",
     }
 
     def parse(self, response):
         soup = BeautifulSoup(response.body, 'lxml')
-        news_list = soup.find_all("h3", class_="desc")
+        news_list = soup.find("div", class_="most-popular__panels").find_all("li", class_="most-popular-list-item")
         items = []
         for news in news_list:
             try:
@@ -44,7 +44,7 @@ class RfiNewsSpider(scrapy.Spider):
                 item = NewsMeta()
                 item["site"] = self.site
                 item["url"] = self.base_url + a.get('href')
-                item["title"] = a.string
+                item["title"] = news.find("span", class_="most-popular-list-item__headline").string
                 item["datetime"] = now_datetime()
 
                 if mongo_helper.news_url_exists(item['url']):
@@ -69,7 +69,7 @@ class RfiNewsSpider(scrapy.Spider):
         soup = BeautifulSoup(response.body, 'lxml')
         items = []
         try:
-            content = soup.find("div", class_="bd")
+            content = soup.find("div", class_="story-body__inner")
             #print "c===", content
             #print "string === ", content.text
 
