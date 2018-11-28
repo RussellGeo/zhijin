@@ -12,6 +12,7 @@ import store from './store'
 import News from './components/News'
 import NewsDetail from './components/NewsDetail'
 import Topic from './page/Topic'
+import TopicDetail from './page/TopicDetail'
 
 import VueCookies from 'vue-cookies'
 
@@ -34,7 +35,12 @@ const routes = [
   {
     path: '/topic',
     component: Topic
+  },
+  {
+    path: '/topic_detail',
+    component: TopicDetail
   }
+
 ]
 
 const router = new VueRouter({
