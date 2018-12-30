@@ -21,6 +21,14 @@ import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^test/', views.test),
+    url(r'^register/', views.register),
+    url(r'^login/', views.login),
     url(r'^get_news/', views.get_news),
     url(r'^get_news_detail/', views.get_news_detail),
+    url(r'^get_topic/', views.get_topic),
+    url(r'^topiclist/', views.topiclist),
+    url(r'^topicdetail/', views.get_topic_detail),
+    #url(r'^get_topic_detail/', views.get_topic_detail),
+    url(r'^create_topic/', views.create_topic),
+    url(r'^topicvote/', views.topic_vote),
 ]

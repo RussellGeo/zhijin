@@ -1,17 +1,31 @@
 <template>
+
+  <v-app>
+
+  <v-layout justify-center>
+    <v-flex xs12 sm10 md8 lg6>
+  <v-card
+    class="mx-auto"
+    style="max-width: 500px;height:100%;"
+  >
+ 
+
   <div id="app">
     <keep-alive><router-view></router-view></keep-alive>
-    <bottom-menu></bottom-menu>
   </div>
+  </v-card>
+
+  </v-flex>
+  </v-layout>
+ 
+  </v-app>
 </template>
 
 <script>
-import TabMenu from '@/components/TabMenu'
 
 export default {
   name: 'app',
   components: {
-    'bottom-menu': TabMenu
   }
 }
 </script>

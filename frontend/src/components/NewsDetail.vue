@@ -4,17 +4,12 @@
       知今
     </x-header>
 
-    <!-- card>
-      <div slot="header" style="width:100%;">
-        <p>{{title}}</p>
-      </div>
-      <div slot="content">
-        <p style="color:#999;font-size:12px;">{{source}} {{date}} | {{other}}</p>
-        <p>{{content}}</p>
-      </div>
-    </card -->
-    
     <scroller style="top:auto;">
+
+    <v-card
+      class="mx-auto"
+      style="max-width: 500px;"
+    >
 
     <card>
     <!--article id="article"-->
@@ -31,6 +26,8 @@
       </section>
     <!--/article-->
     </card>
+
+    </v-card>
     <br><br><br><br>
 
     </scroller>

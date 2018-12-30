@@ -1,120 +1,177 @@
 <template>
-  <div class="select">
-    <my-header> </my-header>
-    <section class="news">
-          <router-link to="/topic_detail" class="new" :key='news.channelId'>
-            <div class="intro">
-              <h4>{{news.title}}</h4>
-              <p><span>{{news.source}}</span> | <span>{{news.pubDate}}</span></p>
-            </div>
+  <div id="app">
+
+  <my-header></my-header>
+ 
+  <v-app>
+    <v-btn
+      color="pink"
+      dark
+      absolute
+      middle
+      right
+      fab
+      @click="createTopic"
+    >
+      <v-icon>add</v-icon>
+    </v-btn>
+
+  <scroller style="width:auto !important;left:auto;" class="my-scroller" :on-refresh="refresh" :on-infinite="infinite" ref="refScroller">
+
+    <v-container grid-list-sm>
+
+      <v-layout  column>
+
+        <template v-for="(topic, index) in topics">
+
+        <v-flex xs12 sm6 md3>
+          <router-link :to="{path:'/topic_detail', query:{topicid:topic.topicId}}" class="new" :topicid='topic.topicId'>
+
+            <v-card>
+              <v-card-title>
+                <div>
+                  <div class="headline">{{topic.title}}</div>
+                  <span>{{topic.desc}}</span> <br>
+                  <span>{{topic.source}}</span> | <span>{{topic.pubDate}}</span>  
+                </div>
+              </v-card-title>
+            </v-card>
+
           </router-link>
+        </v-flex>
 
-          <a href="javascript: void(0)" class="new" :key='news.channelId'>
-            <div class="intro">
-              <h4>{{news.title}}</h4>
-              <p><span>{{news.option1.option}}</span><span class="op_value">{{news.option1.value}}</span></p>
-              <p><span>{{news.source}}</span> | <span>{{news.pubDate}}</span></p>
-            </div>
-          </a>
+        </template>
 
-    </section>
-  </div>
+      </v-layout>
+    </v-container>
+
+    <!--v-card>
+      <v-container
+        fluid
+        grid-list-sm
+      >
+        <v-layout column align-center >
+          
+          <template v-for="(topic, index) in topics">
+
+          <v-flex xs12 md6 >
+            <router-link to="/topic_detail" class="new" :key='topic.topicId'>
+            <v-card>
+              <v-card-title>
+                <div>
+                  <div class="headline">{{topic.title}}</div>
+                  <span>{{topic.desc}}</span> <br>
+                  <span>{{topic.source}}</span> | <span>{{topic.pubDate}}</span>  
+                </div>
+              </v-card-title>
+            </v-card>
+            </router-link>
+          </v-flex>
+
+          </template>
+
+        </v-layout>
+      </v-container>
+    </v-card-->
+
+  </scroller>
+  </v-app>
+
+
+  <bottom-menu></bottom-menu>
+</div>
 </template>
 
 <script>
+import TabMenu from '@/components/TabMenu'
 import Header from '@/components/Header'
+import settings from '@/utils/config'
+import Vue from 'vue'
 
 export default {
   components: {
-    'my-header': Header
+    'my-header': Header,
+    'bottom-menu': TabMenu
   },
   data () {
     return {
-      news: {
-        channelId: 1,
-        title: 'title',
-        source: 'source',
-        pubDate: 'pubData',
-        option1: {option: 'op1', value: 11},
-        option2: {option: 'op2', value: 89}
+      pos: 0,
+      request_num: 5,
+      requesting: false,
+      topics: []
+    }
+  },
+  created: function () {
+    this.getTopics()
+  },
+  methods: {
+    createTopic () {
+      this.$router.push({ path: '/create_topic' })
+    },
+    getTopics () {
+      if (this.requesting === true) {
+        return
       }
+      this.requesting = true
+      let url = settings.GetTopicURL + '?pos=' + this.pos + '&num=' + this.request_num
+      console.log(url)
+      Vue.jsonp(url).then(data => {
+        console.log(data.data)
+        if (data.retcode !== 0) {
+          this.requesting = false
+          return
+        }
+        let topiclist = JSON.parse(data.data)
+        for (let i in topiclist) {
+          let topic = topiclist[i]
+          let t = {topicId: topic.topicid, title: topic.title, desc: topic.desc, source: topic.source, pubDate: topic.pubdate, deadline: topic.deadline, option: JSON.parse(topic.options)}
+          this.topics.push(t)
+          this.pos = this.pos + 1
+        }
+        this.requesting = false
+      })
+      .catch(error => {
+        console.log(error)
+        alert('get topic list failed！')
+        this.requesting = false
+      })
+    },
+    refresh () {
+      console.log('refresh function')
+      this.$router.go(0)
+      this.$refs.refScroller.finishPullToRefresh()
+
+      // console.log(this.$refs.refScroller)
+      // let self = this
+      // setTimeout(() => {
+      //   // self.get_news_api('/get_news/', true)
+      //   self.get_news_api({url: '/get_news/', isTop: true})
+      //   self.$refs.refScroller.finishPullToRefresh()
+      // }, 1500)
+    },
+
+    infinite () {
+      console.log('enter infinite')
+      let self = this
+      console.log('infinite function')
+      console.log(this.$cookies.get('token'))
+      setTimeout(() => {
+        let l1 = self.topics.length
+        self.getTopics()
+        let l2 = self.topics.length
+        if (l1 === l2) {
+          self.$refs.refScroller.finishInfinite(true)
+        } else {
+          self.$refs.refScroller.finishInfinite()
+        }
+      }, 1500)
     }
   }
 }
 </script>
 
 <style lang="less">
-.select{
-  background: #fff;
-  .swiper-wrapper{
-    height: 200px;
-    .swiper-slide img{
-      width: 100%;
-      height: 200px;
-    }
-  }
-  .news{
-    min-height: 500px;
-    padding: 0 10px;
-    .new{
-      height: 100px;
-      color: #262627;
-      border-bottom: 1px solid #eee;
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      width: 100%;
-      img{
-        height: 80px;
-        width: 100px;
-      }
-      .intro{
-        width: 80%;
-        height: 80px;
-        display: flex;
-        padding-left: 10px;
-        flex-direction: column;
-        justify-content: space-between;
-        h4{
-          font-size: 20px;
-          line-height: 1.2;
-          font-weight: bold;
-          overflow: hidden;
-          display: -webkit-box;
-          word-break: break-all;
-          -webkit-line-clamp: 2;
-          text-overflow: ellipsis;
-          -webkit-box-orient: vertical;
-        }
-        p{
-          font-size: 13px;
-          color: #666;
-        }
-        .op_value{
-          float:right;
-        }
-      }
-    }
-    .loadMore{
-      height: 50px;
-      width: 100%;
-      color: #545454;
-      background: #eee;
-      text-align: center;
-      line-height: 50px;
-      font-size: 13px;
-      border: none;
-      border-radius: 0;
-      outline: none;
-      margin-bottom: 10px;
-    }
-    .fail{
-      display: flex;
-      min-height: 300px;
-      align-items: center;
-      justify-content: center;
-    }
-  }
+.my-scroller{
+  top: auto !important;
 }
-
 </style>

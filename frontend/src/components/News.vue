@@ -2,10 +2,38 @@
   <div>
     <!--x-header class="header" slot="header" :left-options="{showBack: false}"> zhijin </x-header-->
     <my-header> </my-header>
-    <scroller class="my-scroller" :on-refresh="refresh" :on-infinite="infinite" ref="refScroller">
+    <scroller style="width:auto !important;left:auto;" class="my-scroller" :on-refresh="refresh" :on-infinite="infinite" ref="refScroller">
       <!--panel :list="newsList" :type="panel_type" @on-click-item="onClickItem" @on-img-error="onImgError"></panel-->
-      <panel :list="tailNewsList" :type="panel_type" @on-click-item="onClickItem" @on-img-error="onImgError"></panel>
+
+      <!--panel :list="tailNewsList" :type="panel_type" @on-click-item="onClickItem" @on-img-error="onImgError"></panel-->
+
+      <v-list two-line>
+        <template v-for="(item, index) in tailNewsList">
+          <v-list-tile
+            :key="item.title"
+            avatar
+            ripple
+            @click="onClickItem(item)"
+          >
+
+            <v-list-tile-content>
+                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                <v-list-tile-sub-title class="text--primary">{{ item.desc}}</v-list-tile-sub-title>
+                <v-list-tile-sub-title>{{ item.meta.source}} | {{ item.meta.date }}</v-list-tile-sub-title>
+              </v-list-tile-content>
+
+            </v-list-tile>
+            <v-divider
+              v-if="index + 1 < tailNewsList.length"
+              :key="index"
+            ></v-divider>
+
+        </template>
+      </v-list>
+
     </scroller>
+
+    <bottom-menu></bottom-menu>
   </div>
 </template>
 
@@ -14,6 +42,7 @@
 import { Panel } from 'vux'
 import { mapState, mapActions, mapMutations } from 'vuex'
 import Header from '@/components/Header'
+import TabMenu from '@/components/TabMenu'
 
 // var inited = false
 var updating = false
@@ -22,6 +51,7 @@ export default {
   components: {
     // XHeader,
     'my-header': Header,
+    'bottom-menu': TabMenu,
     Panel
   },
   methods: {
@@ -45,10 +75,10 @@ export default {
     ]),
 
     refresh () {
+      console.log('refresh function')
       this.$refs.refScroller.finishPullToRefresh()
 
       // console.log(this.$refs.refScroller)
-      // console.log('refresh function')
       // let self = this
       // setTimeout(() => {
       //   // self.get_news_api('/get_news/', true)

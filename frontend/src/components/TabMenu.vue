@@ -8,6 +8,11 @@
           <img src="@/assets/icon_nav_cell.png" alt="" slot="icon">
           <span slot="label">Topic</span>
         </tabbar-item>
+        <tabbar-item link="/account">
+          <img src="@/assets/icon_nav_cell.png" alt="" slot="icon">
+          <span slot="label">Me</span>
+        </tabbar-item>
+
       </tabbar>
 </template>
 
