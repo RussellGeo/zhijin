@@ -13,7 +13,7 @@
       dark
       flat
     >
-      <v-btn icon>
+      <v-btn icon @click="back">
         <v-icon>arrow_back</v-icon>
       </v-btn>
       <v-card-title class="title font-weight-regular">创建新话题</v-card-title>
@@ -199,7 +199,9 @@ export default {
     pubdateChange (value) {
       console.log('pubdate change', value)
     },
-
+    back () {
+      this.$router.go(-1)
+    },
     addressCheck () {
       this.errorMessages = this.address && !this.topicTitle
         ? 'Hey! I\'m required'

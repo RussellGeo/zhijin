@@ -130,14 +130,13 @@ export default {
         console.log(data.data)
         if (data.retcode !== 0) {
           console.log('vote failed')
-          return
         }
-        this.$router.go(0)
       })
       .catch(error => {
         console.log(error)
         alert('get topic detail failed')
       })
+      this.get_topic_detail(this.topic.topicId)
     }
   }
 
